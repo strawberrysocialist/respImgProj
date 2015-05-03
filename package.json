@@ -1,0 +1,22 @@
+{
+  "name": "responsiveImages",
+  "version": "0.1.0",
+  "description": "Udacity MOOC for Front-End Web Dev nanodegree.",
+  "license": "CC-BY-SA-4.0",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/npm/npm.git"
+    },
+    "engines": {
+    "node": ">= 0.10.0"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "~0.4.0",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-qunit": "~0.5.2",
+    "grunt-contrib-uglify": "~0.5.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-responsive-images": "^0.1.6"
+  }
+}

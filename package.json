@@ -4,10 +4,10 @@
   "description": "Udacity MOOC for Front-End Web Dev nanodegree.",
   "license": "CC-BY-SA-4.0",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/npm/npm.git"
-    },
-    "engines": {
+    "type": "git",
+    "url": "https://github.com/npm/npm.git"
+  },
+  "engines": {
     "node": ">= 0.10.0"
   },
   "devDependencies": {
@@ -17,6 +17,11 @@
     "grunt-contrib-qunit": "~0.5.2",
     "grunt-contrib-uglify": "~0.5.0",
     "grunt-contrib-watch": "~0.6.1",
+    "grunt-dploy": "0.0.2",
+    "grunt-pagespeed": "^1.0.0",
     "grunt-responsive-images": "^0.1.6"
+  },
+  "dependencies": {
+    "imager.js": "^0.5.0"
   }
 }

@@ -1,0 +1,12 @@
+{
+  boss: true,
+  browser: true,
+  curly: true,
+  eqeqeq: true,
+  eqnull: true,
+  globals: {},
+  latedef: true,
+  noarg: true,
+  undef: true,
+  unused: true
+}

@@ -1,178 +1,344 @@
-/*global module:false*/
-module.exports = function(grunt) {
+/*
+ After you have changed the settings at "Your code goes here",
+ run this with one of these options:
+  "grunt" alone creates a new, completed images directory
+  "grunt clean" removes the images directory
+  "grunt responsive_images" re-processes images without removing the old ones
+*/
 
-  // Project configuration.
+module.exports = function(grunt) {
+  require('load-grunt-tasks')(grunt);
+  require('time-grunt')(grunt);
+
   grunt.initConfig({
-    // Metadata.
-    pkg: grunt.file.readJSON('package.json'),
-    banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
-      '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-      '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
-      '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-      ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
-    // Task configuration.
-    jscs: {
-      options: {
-        preset: 'node-style-guide'
-      },
+    // HTML-focused
+    htmlhint: {
       build: {
         files: [
-          { expand: true,
-            cwd: 'src/js/',
-            src: ['**/*.js', '!lib/**/*.js']
+          {
+            expand: true,
+            cwd: 'dev/',
+            src: ['*.htm*'],
           }
-        ]
+        ],
+        options: {
+          'tag-pair': true,
+          'tagname-lowercase': true,
+          //'tag-self-close': true,
+          'attr-lowercase': true,
+          'attr-value-double-quotes': true,
+          'attr-no-duplication': true,
+          'spec-char-escape': true,
+          'id-unique': true,
+          'doctype-first': true,
+          'img-alt-require': true,
+          'doctype-html5': true,
+          'space-tab-mixed-disabled': true
+        }
       }
-    },
-    jshint: {
-      options: {
-        boss: true,
-        browser: true,
-        curly: true,
-        eqeqeq: true,
-        eqnull: true,
-        globals: {},
-        latedef: true,
-        noarg: true,
-        undef: true,
-        unused: true
-      },
-      gruntfile: {
-        src: 'Gruntfile.js'
-      },
-      lib_test: {
-        files: [
-          { expand: true,
-            cwd: 'src/js/lib/',
-            src: ['**/*.js']
-          }
-        ]
-      },
-      app_test: {
-        files: [
-          { expand: true,
-            cwd: '<%= jscs.build.files.cwd %>',
-            src: '<%= jscs.build.files.src %>',
-          }
-        ]
-      }
-    },
-    qunit: {
-      //files: ['test/**/*.html']
-      lib_test: {
-        files: [
-          { expand: true,
-            cwd: 'src/js/lib-test/',
-            src: ['**/*.js']
-          }
-        ]
-      },
-      app_test: {
-        files: [
-          { expand: true,
-            cwd: 'src/js/test/',
-            src: ['**/*.js']
-          }
-        ]
-      }
-    },
-    concat: {
-      options: {
-        banner: '<%= banner %>',
-        stripBanners: true
-      },
+    }, //htmlhint
+
+    htmlmin: {
       build: {
         files: [
-          //{src: ['src/js/**/*.js', '!src/js/lib/**/*.js'], dest: 'dev/js/<%= pkg.name %>.js'}
-          { expand: true,
-            cwd: '<%= jscs.build.files.cwd %>',
-            src: '<%= jscs.build.files.src %>',
-            dest: 'dev/js/<%= pkg.name %>.js'
+          {
+            expand: true,
+            cwd: 'dev/',
+            src: ['*.htm*'],
+            dest: 'prod/',
+            ext: '.html'
           }
-        ]
+        ],
+        options: {
+          removeComments: true,
+          removeCommentsFromCDATA: true,
+          collapseWhitespace: true,
+          removeRedundantAttributes: true,
+          useShortDoctype: true
+        }
       }
-    },
-    uglify: {
-      options: {
-        banner: '<%= banner %>'
-      },
+    }, //htmlmin
+
+    validation: {
       build: {
         files: [
-          //{src: ['<%= concat.build.files.dest %>'], dest: 'dev/dist/<%= pkg.name %>.min.js'}
-          { expand: true,
-            src: '<%= concat.build.files.dest %>',
-            dest: 'dev/js/',
-            ext: '.min.js',
-            extDot: 'first'
+          {
+            expand: true,
+            cwd: 'prod/',
+            src: ['*.htm*']
           }
-        ]
-      }
-    },
+        ],
+        options: {
+            reset: grunt.option('reset') || false,
+            relaxerror: [
+              'Bad value X-UA-Compatible for attribute http-equiv on element meta.',
+              'This interface to HTML5 document checking is deprecated.'
+            ] //ignores these errors 
+        }
+     }
+    }, //validation
+
+    // Image-focused
     responsive_images: {
-      build: {
+      dev: {
         options: {
           engine: 'im',
-          sizes: [{
-            name: 'small',
-            width: '30%',
-            suffix: '_small',
-            quality: 20
-          },{
-            name: 'large',
-            width: '50%',
-            suffix: '_large',
-            quality: 40
-          }]
+          sizes: [
+            {
+              name: 'small',
+              width: 320,
+              quality: 20
+            },
+            {
+              name: 'medium',
+              width: 640,
+              quality: 30
+            },
+            {
+              name: "large",
+              width: 1024,
+              quality: 40
+            }
+          ]
         },
-        files: [{
-          expand: true,
-          cwd: 'src/images/',
-          src: ['*.{gif,jpg,png}'],
-          dest: 'dev/images/'
-        }]
+        files: [
+          {
+            expand: true,
+            cwd: 'dev/images/',
+            src: ['*.{gif,jpg,png}'],
+            dest: 'prod/images/'
+          }
+        ]
+      }
+    }, //responsive_images
+
+    imagemin: {
+      build: {
+        files: [
+          {
+            expand: true,
+            cwd: 'dev/images/',
+            src: ['*.{png,jpg,jpeg,gif}'],
+            dest: 'prod/images/'
+          }
+        ],
+        options: {
+          svgoPlugins: [
+            { removeViewBox: false },
+            { removeUselessStrokeAndFill: false },
+            { removeEmptyAttrs: false }
+          ]
+        }
+      }
+    }, //imagemin
+
+    rename: {
+      moveSmall: {
+        files: [
+          {
+            expand: true,
+            cwd: 'prod/images/',
+            src: ['*small.{gif,jpg,png}'],
+            dest: 'prod/images/small/'
+          }
+        ]
+      },
+      moveMedium: {
+        files: [
+          {
+            expand: true,
+            cwd: 'prod/images/',
+            src: ['*medium.{gif,jpg,png}'],
+            dest: 'prod/images/medium/'
+          }
+        ]
+      },
+      moveLarge: {
+        files: [
+          {
+            expand: true,
+            cwd: 'prod/images/',
+            src: ['*large.{gif,jpg,png}'],
+            dest: 'prod/images/large/'
+          }
+        ]
       }
     },
-    watch: {
-      gruntfile: {
-        files: '<%= jshint.gruntfile.src %>',
-        tasks: ['jshint:gruntfile']
-      },
-      lib_test: {
-        files: '<%= jshint.lib_test.src %>',
-        tasks: ['jshint:lib_test', 'qunit']
+
+    // CSS-focused
+    postcss: {
+      build: {
+        files: [
+          {
+            expand: true,
+            cwd: 'dev/css/',
+            src: ['*.css', '!*.min.css'],
+            dest: 'prod/css/',
+            ext: '.css'
+          }
+        ],
+        options: {
+          processors: [
+            require('pixrem')(), // add fallbacks for rem units
+            require('autoprefixer-core')({browsers: 'last 2 versions'}), // add vendor prefixes
+            require('cssnano')() // minify the result
+          ]
+        }
       }
-    }
-  });
+    }, //postcss
 
-  // These plugins provide necessary tasks.
-  grunt.loadNpmTasks("grunt-jscs");
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-csslint');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
-  grunt.loadNpmTasks('grunt-contrib-htmlmin');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-qunit');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-responsive-images');
+    //JS-focused
+    jshint: {
+      build: {
+        files: [
+          {
+            expand: true,
+            cwd: 'dev/js/',
+            src: ['*.js']
+          }
+        ]
+      },
+      options: {
+        //Report errors but pass the task
+        force: true
+      }
+    }, //jshint
 
-  // CSS-related tasks.
-  grunt.registerTask('lintcss', 'Validate css quality', ['jscs', 'jshint']);
-  grunt.registerTask('testcss', 'Test validated css', ['lintcss', 'qunit']);
+    uglify: {
+      build: {
+        files: [
+          {
+            expand: true,
+            cwd: 'dev/js',
+            src: ['*.js'],
+            dest: 'prod/js',
+            ext: '.js'
+          }
+        ],
+        options: {
+          preserveComments: 'some',
+          quoteStyle: 1,
+          compress: {
+            sequences: true,
+            properties: true,
+            dead_code: true,
+            drop_debugger: true,
+            conditionals: true,
+            comparisons: true,
+            evaluate: true,
+            booleans: true,
+            loops: true,
+            unused: true,
+            if_return: true,
+            join_vars: true,
+            warnings: true,
+            drop_console: true
+          }
+        }
+      }
+    }, //uglify
+    
+    /* Clear out the images directory if it exists */
+    clean: {
+      dev: {
+        files: [
+          {
+            expand: true,
+            cwd: 'prod/',
+            src: ['css', 'images']
+          }
+        ],
+      },
+      css: {
+        files: [
+          {
+            expand: true,
+            cwd: 'prod/',
+            src: ['css']
+          }
+        ],
+      },
+      img: {
+        files: [
+          {
+            expand: true,
+            cwd: 'prod/',
+            src: ['images']
+          }
+        ],
+      },
+    }, //clean
 
-  // JS-related tasks.
-  grunt.registerTask('lintjs', 'Validate javascript quality', ['jscs', 'jshint']);
-  grunt.registerTask('testjs', 'Test validated javascript', function() {
-    grunt.task.run(['lintjs', 'qunit']);
-  });
-  grunt.registerTask('js', 'Check and build javascript', function() {
-    grunt.task.run(['testjs', 'concat', 'uglify']);
-  });
+    /* Generate the images directory if it is missing */
+    mkdir: {
+      dev: {
+        options: {
+          create: ['prod/css', 'prod/images']
+        },
+      },
+      css: {
+        options: {
+          create: ['prod/css']
+        },
+      },
+      img: {
+        options: {
+          create: ['prod/images']
+        },
+      },
+    }, //mkdir
 
-  // Optimization tasks.
-  grunt.registerTask('img', ['responsive_images']);
+    /* Copy the "fixed" images that don't go through processing into the images/directory */
+    copy: {
+      build: {
+        files: [
+          {
+            expand: true,
+            cwd: 'dev/',
+            src: 'images/fixed/*.{gif,jpg,png}',
+            dest: 'prod/'
+          }
+        ]
+      },
+    }, //copy
 
-  // Default task.
-  grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
+    watch: {
+      dev: {
+          files: ['dev/**/*'],
+          tasks: ['newer:concurrent']
+      }, //dev
+      html: {
+          files: ['*.htm*'],
+          tasks: ['newer:htmlhint:build', 'newer:htmlmin:build', 'newer:htmlvalid:build']
+      }, //html
+      css: {
+          files: ['dev/css/*.css'],
+          tasks: ['newer:postcss:build']
+      }, //css
+      img: {
+          files: ['dev/imgages/*'],
+          tasks: ['clean:img', 'copy', 'newer:responsive_images:build','newer:imagemin:build']
+      }, //img
+      options: {
+        livereload: true, // reloads browser on save
+        spawn: false,
+        debounceDelay: 1000,
+      }
+    }, //watch
+
+    concurrent: {
+      first: ['htmlhint:build', 'postcss:build', 'responsive_images:build'],
+      second: ['htmlmin:build', 'uglify:build'],
+      third: ['htmlvalid:build', 'imagemin:build'],
+      options: {
+        limit: 4
+      }
+    } //concurrent
+  }); //initConfig
+
+  grunt.registerTask('default', 'watch:dev');
+  grunt.registerTask('init', ['clean:dev', 'mkdir:dev', 'copy']);
+  grunt.registerTask('build', ['clean:dev', 'mkdir:dev', 'copy', 'newer:concurrent']);
+  grunt.registerTask('prod', ['htmlmin:build', 'validation:build','postcss:build', 'uglify:build']);
+  grunt.registerTask('img', ['copy', 'responsive_images', 'imagemin']);
 };

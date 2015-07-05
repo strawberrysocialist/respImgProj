@@ -1,0 +1,36 @@
+/*
+
+Your styles go here!
+
+Hint! You'll probably want to start by styling:
+  * <body>
+  * <article>
+  * <h1>
+  * <img>
+
+I've left some boilerplate below for you.
+
+*/
+
+body {
+	max-width: 50em;
+}
+
+article {
+	max-width: 40em;
+	padding-left: 5em;
+	padding-right: 5em;
+	/*
+	min-width: 600px;
+	max-width: 1200px;
+	*/
+	font-family: serif;
+}
+
+h1 {
+	font-family: sans-serif;
+}
+
+img {
+	max-width: 100%
+}

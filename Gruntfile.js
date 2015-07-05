@@ -350,11 +350,11 @@ module.exports = function(grunt) {
     watch: {
       dev: {
           files: ['dev/**/*'],
-          tasks: ['newer:concurrent']
+          tasks: ['concurrent']
       }, //dev
       html: {
           files: ['*.htm*'],
-          tasks: ['newer:htmlhint:build', 'newer:htmlmin:build', 'newer:htmlvalid:build']
+          tasks: ['newer:htmlhint:build', 'newer:htmlmin:build', 'newer:validation:build']
       }, //html
       css: {
           files: ['dev/css/*.css'],
@@ -372,9 +372,9 @@ module.exports = function(grunt) {
     }, //watch
 
     concurrent: {
-      first: ['htmlhint:build', 'postcss:build', 'responsive_images:build'],
-      second: ['htmlmin:build', 'uglify:build', 'imagemin:build'],
-      third: ['htmlvalid:build', 'rename'],
+      first: ['htmlhint:build', 'postcss:build'],// 'responsive_images:build'],
+      second: ['htmlmin:build', 'uglify:build'],// 'imagemin:build'],
+      third: ['validation:build'],// 'rename'],
       options: {
         limit: 4
       }

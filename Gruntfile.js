@@ -85,8 +85,13 @@ module.exports = function(grunt) {
           engine: 'im',
           sizes: [
             {
-              name: 'small',
+              name: 'xsmall',
               width: 320,
+              quality: 20
+            },
+            {
+              name: 'small',
+              width: 480,
               quality: 20
             },
             {
@@ -96,6 +101,16 @@ module.exports = function(grunt) {
             },
             {
               name: "large",
+              width: 800,
+              quality: 30
+            },
+            {
+              name: "xlarge",
+              width: 960,
+              quality: 40
+            },
+            {
+              name: "xxlarge",
               width: 1024,
               quality: 40
             }
@@ -133,6 +148,16 @@ module.exports = function(grunt) {
     }, //imagemin
 
     rename: {
+      moveXSmall: {
+        files: [
+          {
+            expand: true,
+            cwd: 'prod/images/',
+            src: ['*xsmall.{gif,jpg,png}'],
+            dest: 'prod/images/xsmall/'
+          }
+        ]
+      },
       moveSmall: {
         files: [
           {
@@ -160,6 +185,26 @@ module.exports = function(grunt) {
             cwd: 'prod/images/',
             src: ['*large.{gif,jpg,png}'],
             dest: 'prod/images/large/'
+          }
+        ]
+      },
+      moveXLarge: {
+        files: [
+          {
+            expand: true,
+            cwd: 'prod/images/',
+            src: ['*xlarge.{gif,jpg,png}'],
+            dest: 'prod/images/xlarge/'
+          }
+        ]
+      },
+      moveXXLarge: {
+        files: [
+          {
+            expand: true,
+            cwd: 'prod/images/',
+            src: ['*xxlarge.{gif,jpg,png}'],
+            dest: 'prod/images/xxlarge/'
           }
         ]
       }
@@ -328,8 +373,8 @@ module.exports = function(grunt) {
 
     concurrent: {
       first: ['htmlhint:build', 'postcss:build', 'responsive_images:build'],
-      second: ['htmlmin:build', 'uglify:build'],
-      third: ['htmlvalid:build', 'imagemin:build'],
+      second: ['htmlmin:build', 'uglify:build', 'imagemin:build'],
+      third: ['htmlvalid:build', 'rename'],
       options: {
         limit: 4
       }
@@ -340,5 +385,5 @@ module.exports = function(grunt) {
   grunt.registerTask('init', ['clean:dev', 'mkdir:dev', 'copy']);
   grunt.registerTask('build', ['clean:dev', 'mkdir:dev', 'copy', 'newer:concurrent']);
   grunt.registerTask('prod', ['htmlmin:build', 'validation:build','postcss:build', 'uglify:build']);
-  grunt.registerTask('img', ['copy', 'responsive_images', 'imagemin']);
+  grunt.registerTask('img', ['copy', 'responsive_images', 'imagemin', 'rename']);
 };

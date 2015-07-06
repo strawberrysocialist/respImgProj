@@ -340,7 +340,7 @@ module.exports = function(grunt) {
           {
             expand: true,
             cwd: 'dev/',
-            src: 'images/fixed/*.{gif,jpg,png}',
+            src: 'images/fixed/*.{gif,jpg,png,svg}',
             dest: 'prod/'
           }
         ]
